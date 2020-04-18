@@ -4,10 +4,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import team.isaz.prerevolutionarytinder.client.shell.StringConvertationUtils;
@@ -36,25 +36,37 @@ public class RequestResponseService {
     public String like() {
         if (profile == null) return "Любовь проявлена";
 
-        return sendRelation(true);
+        var relationResponse = sendRelation(true);
+
+        return getCheckedByAuthorizeString(relationResponse);
     }
 
-    private String sendRelation(Boolean relation) {
+    private Response sendRelation(Boolean relation) {
         var uri = url.sendRelation();
 
         var requestParams = new HashMap<String, String>();
         requestParams.put("session_id", profile.getSessionId().toString());
-        requestParams.put("whom", profile.getCurrentProfile().toString());
+        requestParams.put("whom", profile.getCurrentProfile());
         requestParams.put("is_like", relation.toString());
 
-        var requestEntity = new RequestEntity<Map<String, String>>(requestParams, HttpMethod.POST, uri);
-        var response = restTemplate.exchange(requestEntity, String.class);
-        if (response.getStatusCode().equals(HttpStatus.OK)) return response.getBody();
-        return "Ошибка! Попробуйте ещё разъ!";
+        var requestEntity = RequestEntity.post(uri).body(requestParams);
+        try {
+            var response = restTemplate.exchange(requestEntity, String.class);
+            return new Response(true, response);
+        } catch (RestClientException e) {
+            logger.debug(e.getMessage());
+            return new Response(false, e.getMessage());
+        }
     }
 
     public String showNext() {
-        String nextProfileUUID = getNextUUID();
+        var response = getNextUUID();
+        if (!response.isStatus()) return "Нет подходящих анкет :(";
+        profile.setCurrentProfile(response.getAttach().toString());
+        return showProfileById(profile.getCurrentProfile());
+    }
+
+    public String showProfileById(String nextProfileUUID) {
         var map = Objects.requireNonNull(getPublicProfileInfo(nextProfileUUID));
         return createProfileView(map.get("username"), map.get("sex"), map.get("profile_message"));
     }
@@ -96,30 +108,29 @@ public class RequestResponseService {
 
         var requestParams = new HashMap<String, String>();
         requestParams.put("session_id", profile.getSessionId().toString());
-        var requestEntity = new RequestEntity<Map<String, String>>(requestParams, HttpMethod.GET, uri);
+        var requestEntity = RequestEntity.post(uri).body(requestParams);
         var response = restTemplate.exchange(requestEntity, new ParameterizedTypeReference<Map<String, String>>() {
         });
         if (response.getStatusCode().equals(HttpStatus.OK)) return response.getBody();
         return null;
     }
 
-    private String getNextRelatedUUID() {
+    private Response getNextRelatedUUID() {
         var uri = url.getRelatedUUID();
 
         var requestParams = new HashMap<String, String>();
         requestParams.put("session_id", profile.getSessionId().toString());
-        //var requestEntity = new RequestEntity<>(requestParams, HttpMethod.GET, uri);
         var requestEntity = RequestEntity.post(uri).contentType(MediaType.APPLICATION_JSON).body(requestParams);
         try {
             var response = restTemplate.exchange(requestEntity, String.class);
-            return response.getBody();
+            return new Response(true, response.getBody());
         } catch (RestClientException e) {
-            System.out.println(e);
+            logger.debug(e.getMessage());
         }
-        return null;
+        return new Response(false, "Нет подходящих анкет");
     }
 
-    private String getNextUUID() {
+    private Response getNextUUID() {
         if (profile == null) return getNextByOrderUUID();
         return getNextRelatedUUID();
     }
@@ -127,7 +138,7 @@ public class RequestResponseService {
     private Map<String, String> getPublicProfileInfo(String uuid) {
         var uri = url.getPublicProfileInfo(uuid);
 
-        var requestEntity = new RequestEntity<String>(HttpMethod.GET, uri);
+        var requestEntity = RequestEntity.get(uri).build();
         var response = restTemplate.exchange(requestEntity, new ParameterizedTypeReference<Map<String, String>>() {
         });
         if (response.getStatusCode().equals(HttpStatus.OK))
@@ -135,13 +146,13 @@ public class RequestResponseService {
         return null;
     }
 
-    private String getNextByOrderUUID() {
+    private Response getNextByOrderUUID() {
         var uri = url.getNextUserByRowNumber(rowNumber);
-        var requestEntity = new RequestEntity<String>(HttpMethod.GET, uri);
+        var requestEntity = RequestEntity.get(uri).build();
         try {
             var response = restTemplate.exchange(requestEntity, String.class);
             rowNumber++;
-            return response.getBody();
+            return new Response(true, response.getBody());
         } catch (RestClientException e) {
             rowNumber = 0;
         }
@@ -151,21 +162,32 @@ public class RequestResponseService {
     public String dislike() {
         if (profile == null) return "Видно не судьба, видно нѣтъ любви.";
 
-        return sendRelation(false);
+        var relationResponse = sendRelation(false);
+
+        return getCheckedByAuthorizeString(relationResponse);
+    }
+
+    private String getCheckedByAuthorizeString(Response relationResponse) {
+        if (!relationResponse.isStatus()) return relationResponse.getAttach().toString();
+        var responseEntity = (ResponseEntity<String>) relationResponse.getAttach();
+        if (responseEntity.getStatusCode().equals(HttpStatus.UNAUTHORIZED))
+            return "Охъ! Время коннекта вышло! Войдите снова!";
+        return responseEntity.getBody();
     }
 
     public Response register(String username, String password, String sex, String profileMessage) {
-        String registerResponse = tryRegister(username, password, sex);
-        if (!StringConvertationUtils.isThatUUID(registerResponse))
+        var registerResponse = tryRegister(username, password, sex);
+        if (!registerResponse.isStatus())
             return new Response(false, "Неудача, попробуйте снова!");
 
-        profile = new ClientProfile(UUID.fromString(Objects.requireNonNull(registerResponse)),
-                username, password, Boolean.parseBoolean(sex));
-
-        UUID currentUUID = UUID.fromString(getNextUUID());
-        profile.setCurrentProfile(currentUUID);
+        profile = new ClientProfile(UUID.fromString(registerResponse.getAttach().toString()),
+                username, password);
+        var response = getNextUUID();
+        if (!response.isStatus()) return new Response(true, "Успехъ!\n\nНо анкетъ пока нетъ.");
+        String nextProfileUUID = response.getAttach().toString();
+        profile.setCurrentProfile(nextProfileUUID);
         if (!profileMessage.equals("")) changeProfileMessage(profileMessage);
-        return new Response(true, "Успехъ!\n\n" + showNext());
+        return new Response(true, "Успехъ!\n\n" + showProfileById(profile.getCurrentProfile()));
     }
 
     private void changeProfileMessage(String profileMessage) {
@@ -173,28 +195,28 @@ public class RequestResponseService {
         var requestParams = new HashMap<String, String>();
         requestParams.put("session_id", profile.getSessionId().toString());
         requestParams.put("profile_message", profileMessage);
-        var requestEntity = new RequestEntity<Map<String, String>>(requestParams, HttpMethod.PUT, uri);
+        var requestEntity = RequestEntity.put(uri).body(requestParams);
         var response = restTemplate.exchange(requestEntity, String.class);
         logger.debug("profile message change statis is {}\nattached string: {}",
                 response.getStatusCode(), response.getBody());
     }
 
-    private String tryRegister(String username, String password, String sex) {
+    private Response tryRegister(String username, String password, String sex) {
         sex = StringConvertationUtils.sexFromRepresentToBoolean(sex);
         Map<String, String> u = new HashMap<>();
         u.put("username", username);
         u.put("password", password);
         u.put("sex", sex);
         var uri = url.register();
-        var request = new RequestEntity<>(u, HttpMethod.POST, uri);
+        var request = RequestEntity.post(uri).body(u);
         try {
             var response = restTemplate.exchange(request, String.class);
-            return response.getBody();
+            return new Response(true, response.getBody());
         } catch (Throwable e) {
-            System.out.println(e.getMessage());
+            logger.debug(e.getMessage());
         }
 
-        return null;
+        return new Response(false, "Неудача");
     }
 
     public Response login(String username, String password) {
@@ -202,14 +224,18 @@ public class RequestResponseService {
         u.put("username", username);
         u.put("password", password);
         var uri = url.login();
-        var request = new RequestEntity<>(u, HttpMethod.POST, uri);
+        var request = RequestEntity.post(uri).body(u);
         var response = restTemplate.exchange(request, String.class);
         if (response.getStatusCode().equals(HttpStatus.OK)) {
-            UUID currentUUID = UUID.fromString(getNextUUID());
-            profile.setCurrentProfile(currentUUID);
+            profile = new ClientProfile(UUID.fromString(Objects.requireNonNull(response.getBody())),
+                    username, password);
+            var response1 = getNextUUID();
+            if (!response1.isStatus()) return new Response(true, "Успехъ!\n\nНо анкетъ пока нетъ.");
+            String nextProfileUUID = response1.getAttach().toString();
+            profile.setCurrentProfile(nextProfileUUID);
 
             return new Response(true, "Успехъ!\n\n" +
-                    getPublicProfileInfo(profile.getCurrentProfile().toString()));
+                    showProfileById(profile.getCurrentProfile()));
         }
         return new Response(false, "Неудача, попробуйте снова!");
     }
@@ -230,9 +256,8 @@ public class RequestResponseService {
 
     public String getMatchProfile(int number) {
         if (matches == null) return "Обновляем список любимцев.\n\n" + showAll() + "\nПопробуйте ещё!";
-        if (number > matches.size() || number < 0) return "Нет такого номера!";
-        var uuid = matches.keySet().toArray()[number].toString();
-        var map = Objects.requireNonNull(getPublicProfileInfo(uuid));
-        return createProfileView(map.get("username"), map.get("sex"), map.get("profile_message"));
+        if (number > matches.size() || number < 1) return "Нет такого номера!";
+        var uuid = matches.keySet().toArray()[number - 1].toString();
+        return showProfileById(uuid);
     }
 }
