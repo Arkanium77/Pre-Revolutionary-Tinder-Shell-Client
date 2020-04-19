@@ -3,6 +3,7 @@ target/
 !.mvn/wrapper/*
 !**/src/main/**
 !**/src/test/**
+logs
 
 ### STS ###
 .apt_generated
