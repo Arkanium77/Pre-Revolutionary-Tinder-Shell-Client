@@ -1,4 +1,6 @@
-package team.isaz.prerevolutionarytinder.client.shell.services;
+package team.isaz.prerevolutionarytinder.client.shell.domain;
+
+import team.isaz.prerevolutionarytinder.client.shell.services.helper.UriBuilder;
 
 import java.net.URI;
 

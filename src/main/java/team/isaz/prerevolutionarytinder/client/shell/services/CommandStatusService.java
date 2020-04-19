@@ -14,11 +14,10 @@ public class CommandStatusService {
         auth = false;
     }
 
-    public String goMain() {
+    public void goMain() {
         main = true;
         match = false;
         auth = false;
-        return "«Главное Управленіе»";
     }
 
     public void goMatch() {

@@ -1,5 +1,6 @@
-package team.isaz.prerevolutionarytinder.client.shell;
+package team.isaz.prerevolutionarytinder.client.shell.services.helper;
 
+import lombok.var;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

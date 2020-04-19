@@ -1,4 +1,4 @@
-package team.isaz.prerevolutionarytinder.client.shell.services;
+package team.isaz.prerevolutionarytinder.client.shell.services.helper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,9 +13,9 @@ import java.util.Map;
 public class UriBuilder {
     Logger logger = LoggerFactory.getLogger(UriBuilder.class);
     private String pathSplitter;
-    private List<String> fragments;
+    private final List<String> fragments;
     private String host;
-    private Map<String, String> params;
+    private final Map<String, String> params;
 
     public UriBuilder() {
         host = "";

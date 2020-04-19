@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "remote.server.link",
+      "type": "java.lang.String",
+      "description": "Строка, содержащая адрес корневого каталога сервера Pre-Revolutionary Tinder."
+    }
+  ]
+}

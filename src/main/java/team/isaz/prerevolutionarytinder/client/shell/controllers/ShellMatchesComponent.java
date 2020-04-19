@@ -2,31 +2,31 @@ package team.isaz.prerevolutionarytinder.client.shell.controllers;
 
 import org.springframework.shell.Availability;
 import org.springframework.shell.standard.*;
+import team.isaz.prerevolutionarytinder.client.shell.services.CommandHandlerService;
 import team.isaz.prerevolutionarytinder.client.shell.services.CommandStatusService;
-import team.isaz.prerevolutionarytinder.client.shell.services.RequestResponseService;
 
 @ShellComponent
 @ShellCommandGroup("Управленіе Любимцевъ")
 public class ShellMatchesComponent {
 
     CommandStatusService commandStatusService;
-    RequestResponseService requestResponseService;
+    CommandHandlerService commandHandlerService;
 
-    public ShellMatchesComponent(RequestResponseService requestResponseService, CommandStatusService commandStatusService) {
-        this.requestResponseService = requestResponseService;
+    public ShellMatchesComponent(CommandHandlerService commandHandlerService, CommandStatusService commandStatusService) {
+        this.commandHandlerService = commandHandlerService;
         this.commandStatusService = commandStatusService;
     }
 
     @ShellMethod(key = {"весь списокъ", "showAll"}, value = "Показать все анкеты")
     @ShellMethodAvailability("checkAvailability")
     public String showAll() {
-        return requestResponseService.showAll();
+        return commandHandlerService.showAll().getAttach().toString() + "\n";
     }
 
     @ShellMethod(key = {"покажи", "show"}, value = "Показать анкету номер...")
     @ShellMethodAvailability("checkAvailability")
     public String show(@ShellOption int number) {
-        return requestResponseService.getMatchProfile(number);
+        return commandHandlerService.getMatchProfile(number).getAttach().toString() + "\n";
     }
 
     public Availability checkAvailability() {
