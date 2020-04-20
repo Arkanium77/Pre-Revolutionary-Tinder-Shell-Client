@@ -8,12 +8,12 @@ import team.isaz.prerevolutionarytinder.client.shell.services.CommandStatusServi
 
 @ShellComponent
 @ShellCommandGroup("Управленіе входовъ и регистрацій")
-public class ShellAuthController {
+public class ShellAuthCommands {
 
-    CommandStatusService commandStatusService;
-    CommandHandlerService commandHandlerService;
+    private final CommandStatusService commandStatusService;
+    private final CommandHandlerService commandHandlerService;
 
-    public ShellAuthController(CommandHandlerService commandHandlerService, CommandStatusService commandStatusService) {
+    public ShellAuthCommands(CommandHandlerService commandHandlerService, CommandStatusService commandStatusService) {
         this.commandHandlerService = commandHandlerService;
         this.commandStatusService = commandStatusService;
     }
@@ -27,7 +27,7 @@ public class ShellAuthController {
         if (username.equals("") || password.equals("") || sex.equals("")) return register();
         var response = commandHandlerService.register(username, password, sex, profileMessage);
         if (response.isStatus()) {
-            commandStatusService.goMain();
+            commandStatusService.profileView();
         }
         return response.getAttach().toString();
     }
@@ -45,7 +45,7 @@ public class ShellAuthController {
         if (username.equals("") || password.equals("")) return register();
         var response = commandHandlerService.login(username, password);
         if (response.isStatus()) {
-            commandStatusService.goMain();
+            commandStatusService.profileView();
         }
         return response.getAttach().toString();
     }

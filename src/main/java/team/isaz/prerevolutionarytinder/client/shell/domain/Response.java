@@ -12,10 +12,11 @@ import lombok.Getter;
 @Getter
 @EqualsAndHashCode
 public class Response {
-    boolean status;
-    Object attach;
+    private final boolean status;
+    private final Object attach;
 
-    public Response() {
+    public Response(Object attach) {
+        this.attach = attach;
         status = false;
     }
 

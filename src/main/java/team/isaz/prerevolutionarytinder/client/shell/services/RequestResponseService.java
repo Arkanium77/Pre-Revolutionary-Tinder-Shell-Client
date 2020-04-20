@@ -22,8 +22,8 @@ import java.util.Map;
  */
 @Slf4j
 public class RequestResponseService {
-    URLRepository url;
-    RestTemplate restTemplate;
+    private final URLRepository url;
+    private final RestTemplate restTemplate;
 
     public RequestResponseService(RestTemplate restTemplate, URLRepository url) {
         this.url = url;

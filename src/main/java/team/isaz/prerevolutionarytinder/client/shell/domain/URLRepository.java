@@ -5,7 +5,7 @@ import team.isaz.prerevolutionarytinder.client.shell.services.helper.UriBuilder;
 import java.net.URI;
 
 public class URLRepository {
-    String host;
+    private final String host;
 
     public URLRepository(String host) {
         this.host = host;

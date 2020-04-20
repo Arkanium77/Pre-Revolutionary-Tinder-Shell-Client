@@ -5,10 +5,10 @@ import team.isaz.prerevolutionarytinder.client.shell.services.helper.StringConve
 
 @Data
 public class ClientProfile {
-    String sessionId;
-    String username;
-    String password;
-    String currentProfile;
+    private String sessionId;
+    private String username;
+    private String password;
+    private String currentProfile;
 
     public ClientProfile(String sessionId, String username, String password, String currentProfile) {
         this.sessionId = sessionId;

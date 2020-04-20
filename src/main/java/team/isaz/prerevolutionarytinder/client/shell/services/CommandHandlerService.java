@@ -12,11 +12,12 @@ import java.util.Objects;
 
 public class CommandHandlerService {
     private final RequestResponseService requestResponseService;
-    Logger logger = LoggerFactory.getLogger(CommandHandlerService.class);
-    ClientProfile profile;
-    int rowNumber;
-    Map<String, String> matches;
-    ViewGenerator viewGenerator;
+    private final Logger logger = LoggerFactory.getLogger(CommandHandlerService.class);
+    private final ViewGenerator viewGenerator;
+
+    private ClientProfile profile;
+    private int rowNumber;
+    private Map<String, String> matches;
 
     public CommandHandlerService(ViewGenerator viewGenerator, RequestResponseService requestResponseService) {
         profile = null;

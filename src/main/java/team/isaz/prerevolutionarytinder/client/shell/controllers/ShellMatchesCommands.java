@@ -7,12 +7,12 @@ import team.isaz.prerevolutionarytinder.client.shell.services.CommandStatusServi
 
 @ShellComponent
 @ShellCommandGroup("Управленіе Любимцевъ")
-public class ShellMatchesComponent {
+public class ShellMatchesCommands {
 
-    CommandStatusService commandStatusService;
-    CommandHandlerService commandHandlerService;
+    private final CommandStatusService commandStatusService;
+    private final CommandHandlerService commandHandlerService;
 
-    public ShellMatchesComponent(CommandHandlerService commandHandlerService, CommandStatusService commandStatusService) {
+    public ShellMatchesCommands(CommandHandlerService commandHandlerService, CommandStatusService commandStatusService) {
         this.commandHandlerService = commandHandlerService;
         this.commandStatusService = commandStatusService;
     }

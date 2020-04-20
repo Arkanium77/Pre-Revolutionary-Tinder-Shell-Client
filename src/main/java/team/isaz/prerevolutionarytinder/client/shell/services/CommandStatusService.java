@@ -14,19 +14,19 @@ public class CommandStatusService {
         auth = false;
     }
 
-    public void goMain() {
+    public void profileView() {
         main = true;
         match = false;
         auth = false;
     }
 
-    public void goMatch() {
+    public void match() {
         main = false;
         match = true;
         auth = false;
     }
 
-    public void goAuth() {
+    public void auth() {
         main = false;
         match = false;
         auth = true;

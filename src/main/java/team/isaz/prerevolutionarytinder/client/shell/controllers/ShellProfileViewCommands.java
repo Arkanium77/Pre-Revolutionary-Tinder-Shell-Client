@@ -1,5 +1,6 @@
 package team.isaz.prerevolutionarytinder.client.shell.controllers;
 
+import lombok.extern.slf4j.Slf4j;
 import lombok.var;
 import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellCommandGroup;
@@ -11,25 +12,26 @@ import team.isaz.prerevolutionarytinder.client.shell.services.CommandStatusServi
 
 @ShellComponent
 @ShellCommandGroup("Главное управленіе")
-public class ShellStartedController {
-    CommandStatusService commandStatusService;
-    CommandHandlerService commandHandlerService;
+@Slf4j
+public class ShellProfileViewCommands {
+    private final CommandStatusService commandStatusService;
+    private final CommandHandlerService commandHandlerService;
 
-    public ShellStartedController(CommandHandlerService commandHandlerService, CommandStatusService commandStatusService) {
+    public ShellProfileViewCommands(CommandHandlerService commandHandlerService, CommandStatusService commandStatusService) {
         this.commandHandlerService = commandHandlerService;
         this.commandStatusService = commandStatusService;
         init();
     }
 
     public void init() {
-        System.out.println("Приветствую, неизвестного! " +
+        log.info("Приветствую, неизвестного! " +
                 "Дабы в полной мере насладиться обслуживанiем " +
                 "создайте или войдите в свою анкету!\n\n");
         var response = commandHandlerService.showNext();
         if (!response.isStatus()) {
-            System.out.println("Произошла непредвиденная ошибка! Перезапустите приложение!");
+            log.info("Произошла непредвиденная ошибка! Перезапустите приложение!");
         } else {
-            System.out.println(response.getAttach().toString() + "\n");
+            log.info(response.getAttach().toString() + "\n");
         }
     }
 
@@ -57,21 +59,21 @@ public class ShellStartedController {
     @ShellMethod(key = {"анкета", "profile"}, value = "Перейти в «Управленіе входовъ и регистрацій»")
     @ShellMethodAvailability("checkAvailability")
     public String profile() {
-        commandStatusService.goAuth();
+        commandStatusService.auth();
         return "\nПерешли в «Управленіи входовъ и регистрацій»\n";
     }
 
     @ShellMethod(key = {"любимцы", "matches"}, value = "Перейти в «Управленіе Любимцевъ»")
     @ShellMethodAvailability("checkAvailability")
     public String matches() {
-        commandStatusService.goMatch();
+        commandStatusService.match();
         return "\nПерешли в «Управленіе Любимцевъ»\n\n" + commandHandlerService.showAll().getAttach().toString() + "\n";
     }
 
     @ShellMethod(key = {"уйти", "leave"}, value = "Вернуться в «Главное Управленіе»")
     @ShellMethodAvailability("checkNotInMain")
     public String back() {
-        commandStatusService.goMain();
+        commandStatusService.profileView();
         return "\nВернулись въ «Главное Управленіе»\n" + commandHandlerService.showNext().getAttach().toString();
     }
 

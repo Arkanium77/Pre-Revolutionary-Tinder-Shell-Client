@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 public class UriBuilder {
-    Logger logger = LoggerFactory.getLogger(UriBuilder.class);
+    private final Logger logger = LoggerFactory.getLogger(UriBuilder.class);
     private String pathSplitter;
     private final List<String> fragments;
     private String host;
