@@ -129,11 +129,12 @@ public class CommandHandlerService {
 
     private boolean setupCurrentProfileIsFail() {
         var response = getNextUUID();
-        if (response.isStatus()) return true;
-
-        String nextProfileUUID = response.getAttach().toString();
-        profile.setCurrentProfile(nextProfileUUID);
-        return false;
+        if (response.isStatus()) {
+            String nextProfileUUID = response.getAttach().toString();
+            profile.setCurrentProfile(nextProfileUUID);
+            return false;
+        }
+        return true;
     }
 
     private String changeProfileMessage(String profileMessage, String s) {

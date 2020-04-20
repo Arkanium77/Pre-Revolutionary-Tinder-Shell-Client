@@ -72,7 +72,7 @@ public class ShellStartedController {
     @ShellMethodAvailability("checkNotInMain")
     public String back() {
         commandStatusService.goMain();
-        return "\nВернулись въ «Главное Управленіе»\n";
+        return "\nВернулись въ «Главное Управленіе»\n" + commandHandlerService.showNext().getAttach().toString();
     }
 
     public Availability checkAvailability() {
