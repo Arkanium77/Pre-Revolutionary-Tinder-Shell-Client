@@ -1,4 +1,4 @@
-package team.isaz.prerevolutionarytinder.client.shell.services.helper;
+package team.isaz.prerevolutionarytinder.client.shell.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

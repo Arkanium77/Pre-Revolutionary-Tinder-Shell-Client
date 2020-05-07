@@ -1,7 +1,7 @@
 package team.isaz.prerevolutionarytinder.client.shell.domain;
 
 import lombok.Data;
-import team.isaz.prerevolutionarytinder.client.shell.services.helper.StringConvertationUtils;
+import team.isaz.prerevolutionarytinder.client.shell.utils.StringConvertationUtils;
 
 @Data
 public class ClientProfile {

@@ -10,7 +10,7 @@ import team.isaz.prerevolutionarytinder.client.shell.domain.URLRepository;
 import team.isaz.prerevolutionarytinder.client.shell.services.CommandHandlerService;
 import team.isaz.prerevolutionarytinder.client.shell.services.CommandStatusService;
 import team.isaz.prerevolutionarytinder.client.shell.services.RequestResponseService;
-import team.isaz.prerevolutionarytinder.client.shell.services.helper.ViewGenerator;
+import team.isaz.prerevolutionarytinder.client.shell.utils.ViewGenerator;
 
 @Configuration
 public class AppJavaConfig {

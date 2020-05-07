@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import team.isaz.prerevolutionarytinder.client.shell.domain.ClientProfile;
 import team.isaz.prerevolutionarytinder.client.shell.domain.Response;
-import team.isaz.prerevolutionarytinder.client.shell.services.helper.ViewGenerator;
+import team.isaz.prerevolutionarytinder.client.shell.utils.ViewGenerator;
 
 import java.util.Map;
 import java.util.Objects;

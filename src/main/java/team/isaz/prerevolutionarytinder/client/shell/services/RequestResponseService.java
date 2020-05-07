@@ -12,7 +12,7 @@ import org.springframework.web.client.RestTemplate;
 import team.isaz.prerevolutionarytinder.client.shell.domain.ClientProfile;
 import team.isaz.prerevolutionarytinder.client.shell.domain.Response;
 import team.isaz.prerevolutionarytinder.client.shell.domain.URLRepository;
-import team.isaz.prerevolutionarytinder.client.shell.services.helper.StringConvertationUtils;
+import team.isaz.prerevolutionarytinder.client.shell.utils.StringConvertationUtils;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package team.isaz.prerevolutionarytinder.client.shell.services.helper;
+package team.isaz.prerevolutionarytinder.client.shell.utils;
 
 import lombok.var;
 import org.apache.commons.lang3.StringUtils;
